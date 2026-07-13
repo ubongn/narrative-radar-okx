@@ -188,7 +188,7 @@ export async function GET(): Promise<NextResponse> {
       price: PRICE_PER_QUERY_USD,
       network: PAYMENT_NETWORK,
       payTo: REVENUE_WALLET,
-      paymentEnabled: PAYMENT_ENABLED,
+      paymentEnabled: true,
     },
     endpoint: {
       jsonrpc: "POST /api/mcp",
