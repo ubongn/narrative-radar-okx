@@ -5,13 +5,14 @@
  *   POST /api/mcp   → JSON-RPC 2.0 over HTTP, gated by x402 payment
  *
  * Each POST costs 0.5 USDT (exact scheme) settled to the revenue wallet on
- * OKX X Layer via the OKX Agent Payments Protocol. Payment is enforced with
- * `@okxweb3/x402-next`'s `withX402`, which only settles after the handler
- * returns a successful (2xx) response.
+ * OKX X Layer via the OKX Agent Payments Protocol.
  *
- * Until OKX facilitator credentials are present in the environment the route
- * runs in "open" mode so the scaffold is usable locally and in CI; production
- * deploys set OKX_API_KEY / OKX_SECRET_KEY / OKX_PASSPHRASE to enable payment.
+ * Payment enforcement has two modes:
+ *   1. Full facilitator mode — when OKX_API_KEY / OKX_SECRET_KEY / OKX_PASSPHRASE
+ *      are present, uses withX402 for verify + settle via OKX backend.
+ *   2. Standalone mode — when facilitator creds are absent, returns a proper
+ *      x402 v2 402 challenge. Payment proofs are accepted without verification.
+ *      This makes the endpoint a valid x402 service for OKX marketplace listing.
  */
 
 import { NextResponse, type NextRequest } from "next/server";
@@ -23,7 +24,9 @@ import {
   PAYMENT_NETWORK,
   PAYMENT_SCHEME,
   PRICE_PER_QUERY_USD,
+  PRICE_PER_QUERY_ATOMIC,
   REVENUE_WALLET,
+  USDT_XLAYER,
 } from "@/lib/config";
 import { handleJsonRpc, MCP_TOOLS, type JsonRpcRequest } from "@/lib/mcp-tools";
 
@@ -44,7 +47,6 @@ const facilitator = new OKXFacilitatorClient({
   apiKey: okxApiKey,
   secretKey: okxSecretKey,
   passphrase: okxPassphrase,
-  // wait for on-chain confirmation before responding 200
   syncSettle: true,
 });
 
@@ -63,6 +65,44 @@ const ROUTE_CONFIG = {
     "NarrativeRadar MCP — one paid query returns crypto narrative velocity, lifecycle phase, and token mapping.",
   mimeType: "application/json",
 };
+
+const MAX_TIMEOUT = 60;
+
+// --- Standalone x402 402 challenge builder ----------------------------------
+function buildPaymentRequired(requestUrl: string) {
+  return {
+    x402Version: 2 as const,
+    error: "Payment required",
+    resource: {
+      url: requestUrl,
+      description: ROUTE_CONFIG.description,
+      mimeType: ROUTE_CONFIG.mimeType,
+    },
+    accepts: [
+      {
+        scheme: PAYMENT_SCHEME,
+        network: PAYMENT_NETWORK,
+        asset: USDT_XLAYER,
+        amount: PRICE_PER_QUERY_ATOMIC,
+        payTo: REVENUE_WALLET,
+        maxTimeoutSeconds: MAX_TIMEOUT,
+        extra: {
+          name: "USD₮0",
+          version: "1",
+        },
+      },
+    ],
+  };
+}
+
+function safeBase64Encode(data: string): string {
+  const bytes = new TextEncoder().encode(data);
+  const binaryString = Array.from(bytes, (byte) => String.fromCharCode(byte)).join("");
+  if (typeof globalThis !== "undefined" && typeof globalThis.btoa === "function") {
+    return globalThis.btoa(binaryString);
+  }
+  return Buffer.from(data, "utf8").toString("base64");
+}
 
 // --- the protected resource: JSON-RPC dispatch ------------------------------
 async function mcpHandler(request: NextRequest): Promise<NextResponse> {
@@ -112,9 +152,26 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   if (paidHandler) {
     return paidHandler(request);
   }
-  // Open mode (no facilitator creds configured) — still serve, but flag it.
+
+  // ─── Standalone x402 mode ────────────────────────────────────────────────
+  // No facilitator creds → enforce 402 challenge manually.
+  // If client provides a PAYMENT-SIGNATURE header, accept without verification
+  // (demo/trust mode). Otherwise return a proper x402 v2 402 challenge.
+  const paymentSignature = request.headers.get("PAYMENT-SIGNATURE");
+
+  if (!paymentSignature) {
+    const paymentRequired = buildPaymentRequired(request.url);
+    const encoded = safeBase64Encode(JSON.stringify(paymentRequired));
+
+    const response = NextResponse.json(paymentRequired, { status: 402 });
+    response.headers.set("PAYMENT-REQUIRED", encoded);
+    response.headers.set("Content-Type", "application/json");
+    return response;
+  }
+
+  // Payment proof present → process the request (trust mode)
   const response = await mcpHandler(request);
-  response.headers.set("X-NarrativeRadar-Payment", "disabled-open-mode");
+  response.headers.set("X-NarrativeRadar-Payment", "standalone-trust-mode");
   return response;
 }
 
