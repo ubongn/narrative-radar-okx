@@ -7,6 +7,8 @@ import { tracker } from "@/lib/tracker";
 import { PHASE_ORDER } from "@/lib/config";
 import type { NarrativeMetrics } from "@/lib/types";
 
+export const dynamic = "force-dynamic";
+
 // ─── helpers ────────────────────────────────────────────────────────────────
 
 const PHASE_STYLES: Record<string, { bg: string; text: string; emoji: string }> = {
