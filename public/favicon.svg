@@ -1,0 +1,14 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="32" height="32" rx="7" fill="#eff6ff"/>
+  <!-- Outer ring -->
+  <circle cx="16" cy="16" r="12" stroke="#3b82f6" stroke-width="1.8" fill="none" opacity="0.25"/>
+  <!-- Middle ring -->
+  <circle cx="16" cy="16" r="8" stroke="#3b82f6" stroke-width="1.8" fill="none" opacity="0.5"/>
+  <!-- Inner dot -->
+  <circle cx="16" cy="16" r="3" fill="#3b82f6"/>
+  <!-- Radar sweep -->
+  <path d="M16 16 L16 4 A12 12 0 0 1 27 11 Z" fill="#3b82f6" opacity="0.15"/>
+  <!-- Velocity arrow -->
+  <path d="M18 14 L24 8 M24 8 L21 8.5 M24 8 L23.5 11" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg>

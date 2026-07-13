@@ -16,6 +16,9 @@ export const metadata: Metadata = {
   title: "NarrativeRadar — Catch the Narrative Before It Explodes",
   description:
     "Track crypto narrative mention velocity and acceleration. Get alerted on emerging narratives before they go viral. MCP server with x402 pay-per-query.",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({
@@ -28,9 +31,8 @@ export default function RootLayout({
       <body>
         <nav className="nav" id="main-nav">
           <a href="/" className="nav-brand">
-            <span className="nav-brand-icon">📡</span>
-            <span className="nav-brand-name">NarrativeRadar</span>
-            <span className="nav-brand-beta">Beta</span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.svg" alt="NarrativeRadar" height="24" />
           </a>
           <div className="nav-links">
             <a href="/#how" className="nav-link">How it works</a>
