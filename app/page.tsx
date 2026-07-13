@@ -76,33 +76,6 @@ export default function Home() {
 
   return (
     <div style={{ minHeight: "100vh", background: "var(--background)" }}>
-      {/* ─── Nav ─── */}
-      <nav style={{
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "16px 32px", borderBottom: "1px solid var(--gray-200)",
-        position: "sticky", top: 0, background: "rgba(255,255,255,0.9)",
-        backdropFilter: "blur(8px)", zIndex: 100,
-      }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <span style={{ fontSize: "20px" }}>📡</span>
-          <span style={{ fontWeight: 700, fontSize: "16px" }}>NarrativeRadar</span>
-        </div>
-        <div style={{ display: "flex", gap: "24px", alignItems: "center" }}>
-          <a href="#how" style={{ color: "var(--gray-600)", fontSize: "14px", fontWeight: 500 }}>How it works</a>
-          <a href="#tools" style={{ color: "var(--gray-600)", fontSize: "14px", fontWeight: 500 }}>MCP Tools</a>
-          <a href="#pricing" style={{ color: "var(--gray-600)", fontSize: "14px", fontWeight: 500 }}>Pricing</a>
-          <a
-            href="/api/mcp"
-            style={{
-              background: "var(--blue-600)", color: "#fff", padding: "6px 16px",
-              borderRadius: "var(--radius-sm)", fontSize: "13px", fontWeight: 600,
-            }}
-          >
-            API →
-          </a>
-        </div>
-      </nav>
-
       {/* ─── Hero ─── */}
       <section style={{
         textAlign: "center", padding: "80px 32px 60px",
