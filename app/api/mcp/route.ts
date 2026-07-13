@@ -16,7 +16,7 @@
 
 import { NextResponse, type NextRequest } from "next/server";
 import { withX402, x402ResourceServer } from "@okxweb3/x402-next";
-import { ExactEvmScheme } from "@okxweb3/x402-evm";
+import { ExactEvmScheme } from "@okxweb3/x402-evm/exact/server";
 import { OKXFacilitatorClient } from "@okxweb3/x402-core";
 
 import {
@@ -57,7 +57,7 @@ const ROUTE_CONFIG = {
     scheme: PAYMENT_SCHEME,
     payTo: REVENUE_WALLET,
     price: PRICE_PER_QUERY_USD,
-    network: PAYMENT_NETWORK,
+    network: PAYMENT_NETWORK as `${string}:${string}`,
   },
   description:
     "NarrativeRadar MCP — one paid query returns crypto narrative velocity, lifecycle phase, and token mapping.",

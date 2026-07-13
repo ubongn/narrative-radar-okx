@@ -9,7 +9,7 @@
  * real collector (social feeds / on-chain) and runs it on the cron schedule.
  */
 
-import cron from "node-cron";
+import cron, { ScheduledTask } from "node-cron";
 
 import { BUCKET_MS, HISTORY_BUCKETS } from "./config";
 import { buildCatalog, seedShapes } from "./tokens";
@@ -99,7 +99,7 @@ function synthesizeHistory(
 
 class NarrativeTracker {
   private narratives: Narrative[] = [];
-  private cronTask: cron.ScheduledTask | null = null;
+  private cronTask: ScheduledTask | null = null;
 
   constructor() {
     this.seed();
@@ -217,7 +217,7 @@ class NarrativeTracker {
    *
    * @param expression cron expression, default every hour on the hour.
    */
-  startBackgroundCollection(expression = "0 * * * *"): cron.ScheduledTask | null {
+  startBackgroundCollection(expression = "0 * * * *"): ScheduledTask | null {
     if (this.cronTask) return this.cronTask;
     try {
       this.cronTask = cron.schedule(expression, () => {
