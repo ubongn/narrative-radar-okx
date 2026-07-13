@@ -21,12 +21,12 @@ export interface PhaseResult {
 }
 
 // --- Tunable thresholds (mentions / hour, unless noted) ---------------------
-const V_DORMANT = 4; // below this a narrative is effectively asleep
-const V_EMERGING = 18; // rising chatter
-const V_VIRAL = 180; // mainstream attention
-const A_WAKE = 6; // mentions/hr^2 — the "speeding up" signal
-const A_HOT = 35; // mentions/hr^2 — clearly accelerating
-const A_DECAY = -8; // mentions/hr^2 — cooling off
+const V_DORMANT = 8; // below this a narrative is effectively asleep
+const V_EMERGING = 30; // rising chatter
+const V_VIRAL = 200; // mainstream attention
+const A_WAKE = 2; // mentions/hr^2 — the "speeding up" signal
+const A_HOT = 8; // mentions/hr^2 — clearly accelerating
+const A_DECAY = -3; // mentions/hr^2 — cooling off
 
 /** Clamp helper. */
 const clamp = (x: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, x));
